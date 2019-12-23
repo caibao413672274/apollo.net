@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <OutputType>Exe</OutputType>
+    <StartupObject>Apollo.ConfigurationManager.Demo.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

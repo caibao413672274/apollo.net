@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Com.Ctrip.Framework.Apollo.Util;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,11 +13,38 @@ namespace Com.Ctrip.Framework.Apollo.Core.Utils
 
         public Properties() => _dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        public Properties(IDictionary<string, string>? dictionary) =>
+        public Properties(IDictionary<string, string>? dictionary)
+        {
             _dict = dictionary == null
                 ? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-                : new Dictionary<string, string>(dictionary, StringComparer.OrdinalIgnoreCase);
+                : new Dictionary<string, string>(dictionary, StringComparer.OrdinalIgnoreCase)
 
+            ;
+            decryptValues(_dict);
+        }
+        private void decryptValues(IDictionary<string, string>? dict) {
+
+            //如果配置加密，则解密
+            
+            List<string> keys = new List<string>(dict!.Keys);
+            foreach (string key in keys)
+            {
+                string value = dict[key];
+                if (value.StartsWith("ENC(") && value.EndsWith(")"))
+                {
+                    try
+                    {
+                        String decryptValue = AthenaEncryptHelper.DecryptAES(value.Substring(4, value.Length - 5));
+
+                        dict[key] = decryptValue;
+                    }
+                    catch (Exception ex)
+                    {
+                        //  ex.Message;
+                    }
+                }
+            }
+        }
         public Properties( Properties source) => _dict = source._dict;
 
         public Properties( string filePath)
@@ -29,6 +57,9 @@ namespace Com.Ctrip.Framework.Apollo.Core.Utils
             }
             else
                 _dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            decryptValues(_dict);
+
         }
 
         public bool ContainsKey(string key) => _dict.ContainsKey(key);

@@ -90,7 +90,9 @@ namespace Com.Ctrip.Framework.Apollo.Internals
             {
                 Logger().Debug("Remote Config refreshed!");
                 _configCache = current;
-                _syncException = null;
+
+
+                 _syncException = null;
                 FireRepositoryChange(Namespace, GetConfig());
             }
         }
